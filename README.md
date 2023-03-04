@@ -20,13 +20,20 @@ See [docs and examples](./examples/README.md).
 
 - [ ] Static file serving
   - [X] Add initial code
-  - [ ] Add documentation on serving static files
+  - [X] Add documentation on serving static files from a directory
   - [ ] Add tests
   - [ ] Add code to display a single static file behind a route
 - [X] Route variables
   - [X] Add initial code
   - [X] Add tests
+- [ ] Query (GET) parameter handling
+  - [ ] Add code on query parameter handling
+  - [ ] Add docs on how to handle query params
+- [ ] POST handling
+  - [ ] POST payload handling
+  - [ ] File upload
 - [ ] Cookie management
+  - [ ] Add code for cookie handling
   - [ ] Add documentation/examples for handling cookies/logins
 - [ ] Middleware
   - [ ] Add initial code
