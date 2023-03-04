@@ -24,7 +24,7 @@ let server = newServer(handler)
 
 const requesterThreadNum =
   when defined(linux):
-    100
+    10
   else:
     3
 
