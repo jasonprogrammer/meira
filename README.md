@@ -14,6 +14,10 @@ The word Meira (ミイラ) means "mummy" in Japanese.
 This is currently a hobby project under development, and is not
 production-ready.
 
+## Documentation
+
+See the [documentation and examples](./examples/README.md).
+
 ## Progress
 
 - [ ] Static file serving
