@@ -49,7 +49,7 @@ type
     headers*: HttpHeaders
     body*: string
     remoteAddress*: string
-    server: Server
+    server*: Server
     clientSocket: SocketHandle
     responded: bool
     context*: RequestContext
@@ -105,6 +105,9 @@ type
     websocketClaimed: Table[WebSocket, bool]
     websocketQueues: Table[WebSocket, Deque[WebSocketUpdate]]
     websocketQueuesLock: Atomic[bool]
+    staticDir*: string
+    staticWebDir*: string
+    staticFileCacheSizeLimitInBytes*: int
 
   Server* = ptr ServerObj
 
@@ -1430,7 +1433,10 @@ proc newServer*(
   workerThreads = max(countProcessors() * 10, 1),
   maxHeadersLen = 8 * 1024, # 8 KB
   maxBodyLen = 1024 * 1024, # 1 MB
-  maxMessageLen = 64 * 1024 # 64 KB
+  maxMessageLen = 64 * 1024, # 64 KB
+  staticDir: string = "./public",
+  staticWebDir: string = "/public",
+  staticFileCacheSizeLimitInBytes: int = 10000000,
 ): Server {.raises: [MummyError].} =
   ## Creates a new HTTP server. The request handler will be called for incoming
   ## HTTP requests. The WebSocket handler will be called for WebSocket events.
@@ -1455,6 +1461,17 @@ proc newServer*(
   result.maxMessageLen = maxMessageLen
 
   result.workerThreads.setLen(workerThreads)
+
+  if staticDir.startsWith("./"):
+    try:
+      result.staticDir = absolutePath(staticDir)
+    except ValueError, OSError:
+      result.staticDir = staticDir
+  else:
+    result.staticDir = staticDir
+
+  result.staticWebDir = staticWebDir
+  result.staticFileCacheSizeLimitInBytes = staticFileCacheSizeLimitInBytes
 
   # Stuff that can fail
   try:
