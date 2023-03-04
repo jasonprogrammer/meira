@@ -1,6 +1,24 @@
 ## Serving static files from a directory
 
-An example of serving static files is available by running [static_files.nim](./static_files.nim).
+### Example code
+
+```nim
+import meira
+import meira/handlers
+import meira/routers
+
+var router: Router
+router.get("/public/**", staticFileDirectoryHandler)
+
+let server = newServer(router, staticDir="./examples/public")
+echo "Serving on http://localhost:8080"
+echo "In a browser, open: http://localhost:8080/public/index.html"
+server.serve(Port(8080))
+```
+
+### Running the example
+
+An example of serving static files is available by running [static_files.nim](../static_files.nim).
 From the project root, run:
 
 ```
@@ -12,7 +30,7 @@ nim c examples/static_files.nim
 Example output:
 
 ```
-➜  meira git:(main) ✗ ./examples/static_files        
+➜  meira git:(main) ✗ ./examples/static_files
 Serving on http://localhost:8080
 In a browser, open: http://localhost:8080/public/index.html
 ```
