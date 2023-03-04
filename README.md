@@ -9,16 +9,27 @@ work with Mummy.
 
 The word Meira (ミイラ) means "mummy" in Japanese.
 
-## This project is under development
+## Caution!
 
-This is currently a hobby project being developed with the goal of building
-certain features and displaying documentation for:
-  -- Static file serving
-  -- Route variables
-  -- Middleware
-  -- Cookie management
+This is currently a hobby project under development, and is not
+production-ready.
+
+## Progress
+
+- [ ] Static file serving
+  - [X] Add initial code
+  - [ ] Add documentation on serving static files
+  - [ ] Add tests
+  - [ ] Add code to display a single static file behind a route
+- [X] Route variables
+  - [X] Add initial code
+  - [X] Add tests
+- [ ] Cookie management
+  - [ ] Add documentation/examples for handling cookies/logins
+- [ ] Middleware
+  - [ ] Add initial code
 
 ## Contact
 
 If you'd like to discuss anything about the project, feel free to contact me
-on Twitter (@jasonprogrammer) or Mastodon (@jasonprogrammer@mastodon.social).
+on [Twitter](https://twitter.com/jasonprogrammer) or [Mastodon](https://mastodon.social/@jasonprogrammer).
