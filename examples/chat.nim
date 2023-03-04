@@ -1,4 +1,4 @@
-import meira, meira/routers, std/locks, std/sets
+import meira, std/locks, std/sets
 
 ## This example shows a basic chat server over WebSocket.
 ##

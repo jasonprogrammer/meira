@@ -1,4 +1,4 @@
-import meira, meira/fileloggers, std/os
+import meira, std/os
 
 ## This example shows filtering logs based on level and then writing them
 ## to a file using Meira's FileLogger.

@@ -1,4 +1,4 @@
-import meira, meira/routers, std/strutils, waterpark/sqlite
+import meira, std/strutils, waterpark/sqlite
 
 ## This example demonstrates using a pool of SQLite connections to safely reuse
 ## connections in Meira HTTP request handlers.
