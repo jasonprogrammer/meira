@@ -9,8 +9,6 @@ work with Mummy.
 
 The word Meira (ミイラ) means "mummy" in Japanese.
 
-## Caution!
-
 This is currently a hobby project under development, and is not
 production-ready.
 
