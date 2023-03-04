@@ -39,6 +39,9 @@ let
   http11 = "HTTP/1.1"
 
 type
+  RequestContext* = object
+    urlArgs*: Table[string, string]
+
   RequestObj* = object
     httpVersion*: HttpVersion
     httpMethod*: string
@@ -49,6 +52,7 @@ type
     server: Server
     clientSocket: SocketHandle
     responded: bool
+    context*: RequestContext
 
   Request* = ptr RequestObj
 

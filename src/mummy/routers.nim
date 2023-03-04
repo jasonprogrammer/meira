@@ -1,4 +1,4 @@
-import mummy, std/strutils
+import mummy, std/strutils, std/tables
 
 type
   Router* = object
@@ -229,7 +229,11 @@ proc toHandler*(router: Router): RequestHandler =
             matchedRoute = false
             break
 
-          if route.parts[i] == "*": # Wildcard
+          if route.parts[i].len > 2 and route.parts[i][0] == '<' and route.parts[i][^1] == '>':
+            var urlVarName = route.parts[i][1 .. ^2]
+            request.context.urlArgs[urlVarName] = part
+            inc i
+          elif route.parts[i] == "*": # Wildcard
             inc i
           elif route.parts[i] == "**": # Multi-part wildcard
             # Do we have a required next literal?

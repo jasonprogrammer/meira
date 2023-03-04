@@ -1,7 +1,37 @@
-import mummy, mummy/routers
+import mummy, mummy/routers, std/tables
+
+proc userIdHandler(request: Request) =
+  doAssert request.context.urlArgs["id"] == "12345"
+
+proc userSettingHandler(request: Request) =
+  doAssert request.context.urlArgs["id"] == "5678"
+  doAssert request.context.urlArgs["setting_name"] == "theme"
 
 proc handler(request: Request) =
   discard
+
+block:
+  var router: Router
+  router.notFoundHandler = proc(request: Request) =
+    doAssert false
+  router.methodNotAllowedHandler = proc(request: Request) =
+    doAssert false
+  router.errorHandler = proc(request: Request, e: ref Exception) =
+    doAssert false
+
+  router.get("/user/<id>", userIdHandler)
+  router.get("/user/<id>/setting/<setting_name>", userSettingHandler)
+
+  let routerHandler = router.toHandler()
+
+  let request = cast[Request](allocShared0(sizeof(RequestObj)))
+  request.httpMethod = "GET"
+
+  request.uri = "/user/12345"
+  routerHandler(request)
+
+  request.uri = "/user/5678/setting/theme"
+  routerHandler(request)
 
 block:
   var router: Router
