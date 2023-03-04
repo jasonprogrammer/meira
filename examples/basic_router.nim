@@ -1,4 +1,4 @@
-import meira, meira/routers, std/tables
+import meira, std/tables
 
 proc indexHandler(request: Request) =
   var headers: HttpHeaders

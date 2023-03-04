@@ -2,11 +2,11 @@ import cgi
 import filetype
 import httpcore
 import md5
-import ../meira
 import ./common
 import os
 import strutils
 import webby
+import webby/httpheaders
 
 proc staticFileDirectoryHandler*(request: Request) =
   ## This handler helps serve static files from a directory.
@@ -29,7 +29,7 @@ proc staticFileDirectoryHandler*(request: Request) =
 
   let filePath = normalizedPath(request.server.staticDir / uriFilePath)
 
-  var headers: meira.HttpHeaders
+  var headers: httpheaders.HttpHeaders
   headers["Content-Type"] = "text/html"
 
   if not filePath.startsWith(request.server.staticDir):

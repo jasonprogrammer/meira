@@ -1,4 +1,4 @@
-import meira, meira/routers
+import meira
 
 ## This example shows how to access client request headers.
 
