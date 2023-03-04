@@ -27,7 +27,7 @@ nim c examples/static_files.nim
 ./examples/static_files
 ```
 
-Example output:
+## Example output:
 
 ```
 ➜  meira git:(main) ✗ ./examples/static_files
