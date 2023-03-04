@@ -14,7 +14,7 @@ production-ready.
 
 ## Documentation
 
-See the [documentation and examples](./examples/README.md).
+See [docs and examples](./examples/README.md).
 
 ## Progress
 
