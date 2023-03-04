@@ -1,8 +1,8 @@
-import common, std/nativesockets, webby/httpheaders
+import ./common, std/nativesockets, webby/httpheaders
 
-template currentExceptionAsMummyError*(): untyped =
+template currentExceptionAsMeiraError*(): untyped =
   let e = getCurrentException()
-  newException(MummyError, e.getStackTrace & e.msg, e)
+  newException(MeiraError, e.getStackTrace & e.msg, e)
 
 proc encodeFrameHeader*(
   opcode: uint8,

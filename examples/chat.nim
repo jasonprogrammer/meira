@@ -1,4 +1,4 @@
-import mummy, mummy/routers, std/locks, std/sets
+import meira, meira/routers, std/locks, std/sets
 
 ## This example shows a basic chat server over WebSocket.
 ##
@@ -56,7 +56,7 @@ proc websocketHandler(
   of OpenEvent:
     echo "Client connected"
     # When a new client connects, we add it to a set of connected clients.
-    # Mummy uses threads so we need to lock the global memory
+    # Meira uses threads so we need to lock the global memory
     # before we modify it.
     {.gcsafe.}:
       withLock lock:

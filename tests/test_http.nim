@@ -1,17 +1,17 @@
-import httpclient, mummy, zippy
+import httpclient, meira, zippy
 
 proc handler(request: Request) =
   case request.uri:
   of "/":
     if request.httpMethod == "GET":
-      var headers: mummy.HttpHeaders
+      var headers: meira.HttpHeaders
       headers["Content-Type"] = "text/plain"
       request.respond(200, headers, "Hello, World!")
     else:
       request.respond(405)
   of "/compressed":
     if request.httpMethod == "GET":
-      var headers: mummy.HttpHeaders
+      var headers: meira.HttpHeaders
       headers["Content-Type"] = "text/plain"
       var body: string
       for i in 0 ..< 10:

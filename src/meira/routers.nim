@@ -1,4 +1,4 @@
-import mummy, std/strutils, std/tables
+import ../meira, std/strutils, std/tables
 
 type
   Router* = object
@@ -45,7 +45,7 @@ proc addRoute*(
       var j = i + 1
       if j < parts.len and (parts[j] == "*" or parts[j] == "**"):
         raise newException(
-          MummyError,
+          MeiraError,
           "Route ** followed by another * or ** is not supported"
         )
       else:

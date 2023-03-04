@@ -1,4 +1,4 @@
-import mummy, mummy/routers
+import meira, meira/routers
 
 ## This example shows how to access client request headers.
 

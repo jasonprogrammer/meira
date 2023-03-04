@@ -1,7 +1,7 @@
-when not defined(mummyNoWorkers):
-  {.error: "Requires -d:mummyNoWorkers".}
+when not defined(meiraNoWorkers):
+  {.error: "Requires -d:meiraNoWorkers".}
 
-include mummy
+include meira
 
 import std/random
 randomize()

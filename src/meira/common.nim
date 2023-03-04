@@ -1,5 +1,5 @@
 type
-  MummyError* = object of CatchableError
+  MeiraError* = object of CatchableError
 
   HttpVersion* = enum
     Http10, Http11

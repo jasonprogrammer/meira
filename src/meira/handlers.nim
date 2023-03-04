@@ -2,8 +2,8 @@ import cgi
 import filetype
 import httpcore
 import md5
-import mummy
-import mummy/common
+import ../meira
+import ./common
 import os
 import strutils
 import webby
@@ -24,12 +24,12 @@ proc staticFileDirectoryHandler*(request: Request) =
     uriFilePath = uriFilePath[len(webPathPrefix) - 1 .. ^1]
   else:
     raise newException(
-      MummyError, "Static web path is misconfigured. URI path: " & uriFilePath
+      MeiraError, "Static web path is misconfigured. URI path: " & uriFilePath
     )
 
   let filePath = normalizedPath(request.server.staticDir / uriFilePath)
 
-  var headers: mummy.HttpHeaders
+  var headers: meira.HttpHeaders
   headers["Content-Type"] = "text/html"
 
   if not filePath.startsWith(request.server.staticDir):

@@ -1,10 +1,10 @@
 when not defined(gcArc) and not defined(gcOrc):
-  {.error: "Using --mm:arc or --mm:orc is required by Mummy.".}
+  {.error: "Using --mm:arc or --mm:orc is required by Meira.".}
 
 when not compileOption("threads"):
-  {.error: "Using --threads:on is required by Mummy.".}
+  {.error: "Using --threads:on is required by Meira.".}
 
-import mummy/common, mummy/internal, std/atomics, std/base64,
+import meira/common, meira/internal, std/atomics, std/base64,
     std/cpuinfo, std/deques, std/hashes, std/nativesockets, std/os,
     std/parseutils, std/selectors, std/sets, std/sha1, std/strutils, std/tables,
     std/times, webby/httpheaders, zippy
@@ -19,7 +19,7 @@ when defined(linux):
   let SOCK_NONBLOCK
     {.importc: "SOCK_NONBLOCK", header: "<sys/socket.h>".}: cint
 
-const useLockAndCond = (not defined(linux)) or defined(mummyUseLockAndCond)
+const useLockAndCond = (not defined(linux)) or defined(meiraUseLockAndCond)
 
 when useLockAndCond:
   import std/locks
@@ -390,33 +390,33 @@ proc respond*(
 
 proc upgradeToWebSocket*(
   request: Request
-): WebSocket {.raises: [MummyError], gcsafe.} =
+): WebSocket {.raises: [MeiraError], gcsafe.} =
   ## Upgrades the request to a WebSocket connection. You can immediately start
   ## calling send().
 
   if not request.headers.headerContainsToken("Connection", "upgrade"):
     raise newException(
-      MummyError,
+      MeiraError,
       "Invalid request to upgade, missing 'Connection: upgrade' header"
     )
 
   if not request.headers.headerContainsToken("Upgrade", "websocket"):
     raise newException(
-      MummyError,
+      MeiraError,
       "Invalid request to upgade, missing 'Upgrade: websocket' header"
     )
 
   let websocketKey = request.headers["Sec-WebSocket-Key"]
   if websocketKey == "":
     raise newException(
-      MummyError,
+      MeiraError,
       "Invalid request to upgade, missing Sec-WebSocket-Key header"
     )
 
   let websocketVersion = request.headers["Sec-WebSocket-Version"]
   if websocketVersion != "13":
     raise newException(
-      MummyError,
+      MeiraError,
       "Invalid request to upgade, missing Sec-WebSocket-Version header"
     )
 
@@ -1371,7 +1371,7 @@ proc serve*(
   server: Server,
   port: Port,
   address = "localhost"
-) {.raises: [MummyError].} =
+) {.raises: [MeiraError].} =
   ## The server will serve on the address and port. The default address is
   ## localhost. Use "0.0.0.0" to make the server externally accessible (with
   ## caution).
@@ -1379,7 +1379,7 @@ proc serve*(
   ## thread.
 
   if server.socket.int != 0:
-    raise newException(MummyError, "Server already has a socket")
+    raise newException(MeiraError, "Server already has a socket")
 
   try:
     server.socket = createNativeSocket(
@@ -1414,7 +1414,7 @@ proc serve*(
     server.selector.registerHandle2(server.socket, {Read}, dataEntry)
   except:
     server.destroy(true)
-    raise currentExceptionAsMummyError()
+    raise currentExceptionAsMeiraError()
 
   server.serving.store(true, moRelaxed)
 
@@ -1424,7 +1424,7 @@ proc serve*(
     let e = getCurrentException()
     server.log(ErrorLevel, e.msg & "\n" & e.getStackTrace())
     server.destroy(false)
-    raise currentExceptionAsMummyError()
+    raise currentExceptionAsMeiraError()
 
 proc newServer*(
   handler: RequestHandler,
@@ -1437,7 +1437,7 @@ proc newServer*(
   staticDir: string = "./public",
   staticWebDir: string = "/public",
   staticFileCacheSizeLimitInBytes: int = 10000000,
-): Server {.raises: [MummyError].} =
+): Server {.raises: [MeiraError].} =
   ## Creates a new HTTP server. The request handler will be called for incoming
   ## HTTP requests. The WebSocket handler will be called for WebSocket events.
   ## Calls to the HTTP, WebSocket and log handlers are made from worker threads.
@@ -1446,10 +1446,10 @@ proc newServer*(
   ## dispatched for the same connection.
 
   if handler == nil:
-    raise newException(MummyError, "The request handler must not be nil")
+    raise newException(MeiraError, "The request handler must not be nil")
 
   var workerThreads = workerThreads
-  when defined(mummyNoWorkers): # For testing, fuzzing etc
+  when defined(meiraNoWorkers): # For testing, fuzzing etc
     workerThreads = 0
 
   result = cast[Server](allocShared0(sizeof(ServerObj)))
@@ -1510,7 +1510,7 @@ proc newServer*(
       createThread(result.workerThreads[i], workerProc, (result, i))
   except:
     result.destroy(true)
-    raise currentExceptionAsMummyError()
+    raise currentExceptionAsMeiraError()
 
 proc responded*(request: Request): bool =
   request.responded
@@ -1529,5 +1529,5 @@ proc waitUntilReady*(server: Server, timeout: float = 10) =
       now = cpuTime()
       delta = now - start
     if delta > timeout:
-      raise newException(MummyError, "Timeout while waiting for server")
+      raise newException(MeiraError, "Timeout while waiting for server")
     sleep(100)

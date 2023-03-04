@@ -1,4 +1,4 @@
-import httpclient, jsony, mummy, std/random
+import httpclient, jsony, meira, std/random
 
 randomize()
 
@@ -9,7 +9,7 @@ proc handler(request: Request) =
   case request.uri:
   of "/":
     if request.httpMethod == "POST":
-      var headers: mummy.HttpHeaders
+      var headers: meira.HttpHeaders
       headers["Content-Type"] = "application/json"
       let
         jsonIn = fromJson(request.body, TestObject)

@@ -1,6 +1,6 @@
-import common, std/deques, std/locks
+import ./common, std/deques, std/locks
 
-## Since Mummy is a multithreaded server, we need an easy way to handle incoming
+## Since Meira is a multithreaded server, we need an easy way to handle incoming
 ## logs from many threads.
 ##
 ## FileLogger queues incoming logs from any number of threads, then an internal

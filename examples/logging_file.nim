@@ -1,7 +1,7 @@
-import mummy, mummy/fileloggers, std/os
+import meira, meira/fileloggers, std/os
 
 ## This example shows filtering logs based on level and then writing them
-## to a file using Mummy's FileLogger.
+## to a file using Meira's FileLogger.
 ##
 ## The log file is created based on current PID and placed in the current
 ## working directory. This ensure each run gets a new log file automatically.

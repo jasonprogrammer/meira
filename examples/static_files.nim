@@ -1,6 +1,6 @@
-import mummy
-import mummy/handlers
-import mummy/routers
+import meira
+import meira/handlers
+import meira/routers
 
 var router: Router
 router.get("/public/**", staticFileDirectoryHandler)

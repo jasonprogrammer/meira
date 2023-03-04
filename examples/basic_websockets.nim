@@ -1,4 +1,4 @@
-import mummy, mummy/routers
+import meira, meira/routers
 
 proc indexHandler(request: Request) =
   var headers: HttpHeaders

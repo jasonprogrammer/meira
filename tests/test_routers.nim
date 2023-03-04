@@ -1,4 +1,4 @@
-import mummy, mummy/routers, std/tables
+import meira, meira/routers, std/tables
 
 proc userIdHandler(request: Request) =
   doAssert request.context.urlArgs["id"] == "12345"
@@ -51,7 +51,7 @@ block:
   router.get("/literal*", handler)
   router.get("/*double*", handler)
 
-  doAssertRaises MummyError:
+  doAssertRaises MeiraError:
     router.get("/**/**", handler)
 
   let routerHandler = router.toHandler()

@@ -1,7 +1,7 @@
-import mummy, mummy/routers, std/strutils, waterpark/sqlite
+import meira, meira/routers, std/strutils, waterpark/sqlite
 
 ## This example demonstrates using a pool of SQLite connections to safely reuse
-## connections in Mummy HTTP request handlers.
+## connections in Meira HTTP request handlers.
 ##
 ## See the Waterpark repo https://github.com/guzba/waterpark for more info about
 ## connection pools.

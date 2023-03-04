@@ -1,4 +1,4 @@
-import mummy, std/asyncdispatch, ws
+import meira, std/asyncdispatch, ws
 
 proc handler(request: Request) =
   case request.uri:
@@ -14,7 +14,7 @@ proc handler(request: Request) =
 var n: int
 
 proc websocketHandler(
-  websocket: mummy.WebSocket,
+  websocket: meira.WebSocket,
   event: WebSocketEvent,
   message: Message
 ) =
@@ -33,11 +33,11 @@ proc websocketHandler(
       doAssert n == 2
       n += 1
       doAssert message.data == "Fourth"
-    of mummy.Ping:
+    of meira.Ping:
       doAssert n == 3
       n += 1
       doAssert message.data == ""
-    of mummy.Pong:
+    of meira.Pong:
       doAssert false
     websocket.send("Fifth", BinaryMessage)
   of ErrorEvent:
