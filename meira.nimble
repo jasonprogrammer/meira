@@ -1,6 +1,6 @@
-version     = "0.2.13"
-author      = "Ryan Oldenburg"
-description = "Multithreaded HTTP + WebSocket server"
+version     = "0.0.1"
+author      = "Jason Jason"
+description = "Web framework built on the Mummy HTTP server"
 license     = "MIT"
 
 srcDir = "src"

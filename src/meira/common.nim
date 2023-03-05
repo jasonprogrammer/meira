@@ -33,6 +33,7 @@ type
     clientSocket*: SocketHandle
     responded*: bool
     context*: RequestContext
+    params*: Table[string, string]
 
   Request* = ptr RequestObj
 
@@ -122,6 +123,7 @@ type
     httpMethod*, uri*: string
     headers*: HttpHeaders
     body*: string
+    params*: Table[string, string]
 
   IncomingFrameState* = object
     opcode*: uint8
