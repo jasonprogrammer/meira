@@ -30,7 +30,7 @@ proc requesterProc() =
     let response = client.request("http://localhost:8081/search?first_name=jane&last_name=doe")
     doAssert response.status == "200"
 
-  echo "Done, shut down the server"
+  echo "Done, shutting down the server"
   server.close()
 
 createThread(requesterThread, requesterProc)
