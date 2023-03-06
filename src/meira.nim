@@ -1,3 +1,5 @@
+import tables
+
 when not defined(gcArc) and not defined(gcOrc):
   {.error: "Using --mm:arc or --mm:orc is required by Meira.".}
 
@@ -8,8 +10,8 @@ import ./meira/common, ./meira/fileloggers, ./meira/handlers, ./meira/internal,
     ./meira/routers,
     std/atomics, std/base64,
     std/cpuinfo, std/deques, std/hashes, std/nativesockets, std/os,
-    std/parseutils, std/selectors, std/sets, std/sha1, std/strutils, std/tables,
-    std/times, webby/httpheaders, zippy
+    std/parseutils, std/selectors, std/sets, std/sha1, std/strutils,
+    std/times, uri, webby/httpheaders
 
 when defined(linux):
   when defined(nimdoc):
@@ -504,6 +506,15 @@ proc afterRecvWebSocket(
         )
       websocket.postWebSocketUpdate(update)
 
+proc setUrlParams(requestState: var IncomingRequestState) =
+  let questionMarkPosition = requestState.uri.find("?")
+  let queryParamsStr = requestState.uri[questionMarkPosition+1 .. ^1]
+  for key, value in decodeQuery(queryParamsStr):
+    if key in requestState.params:
+      requestState.params[key] = "," & value
+    else:
+      requestState.params[key] = value
+
 proc popRequest(
   server: Server,
   clientSocket: SocketHandle,
@@ -520,6 +531,7 @@ proc popRequest(
   result.headers = move dataEntry.requestState.headers
   result.body = move dataEntry.requestState.body
   result.body.setLen(dataEntry.requestState.contentLength)
+  result.params = move dataEntry.requestState.params
   dataEntry.requestState = IncomingRequestState()
 
 proc afterRecvHttp(
@@ -792,6 +804,8 @@ proc afterRecvHttp(
           bytesRemaining
         )
         dataEntry.bytesReceived = bytesRemaining
+
+    setUrlParams(dataEntry.requestState)
 
     let request = server.popRequest(clientSocket, dataEntry)
     server.postTask(WorkerTask(request: request))

@@ -26,9 +26,9 @@ See [docs and examples](./examples/README.md).
 - [X] Route variables
   - [X] Add initial code
   - [X] Add tests
-- [ ] Query (GET) parameter handling
-  - [ ] Add code on query parameter handling
-  - [ ] Add docs on how to handle query params
+- [X] Query (GET) parameter handling
+  - [X] Add code on query parameter handling
+  - [X] Add docs on how to handle query params
 - [ ] POST handling
   - [ ] POST payload handling
   - [ ] File upload

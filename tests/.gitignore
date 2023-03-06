@@ -1,4 +1,7 @@
-test_http
-test_http2
+test_http_basic_handler
+test_http_json_with_requester_threads
+test_http_parameters
 test_routers
 test_websockets
+megatest
+

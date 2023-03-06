@@ -1,5 +1,8 @@
 # Examples
 
+### URL Params
+  - [Accessing URL params](./docs/url_params.md)
+
 ### Routing
   - [Variables in routes](./docs/routing_variables.md)
 
