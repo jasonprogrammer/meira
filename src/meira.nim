@@ -506,7 +506,7 @@ proc afterRecvWebSocket(
         )
       websocket.postWebSocketUpdate(update)
 
-proc populateUrlParams(requestState: var IncomingRequestState) =
+proc setUrlParams(requestState: var IncomingRequestState) =
   let questionMarkPosition = requestState.uri.find("?")
   let queryParamsStr = requestState.uri[questionMarkPosition+1 .. ^1]
   for key, value in decodeQuery(queryParamsStr):
@@ -528,6 +528,7 @@ proc popRequest(
   result.headers = move dataEntry.requestState.headers
   result.body = move dataEntry.requestState.body
   result.body.setLen(dataEntry.requestState.contentLength)
+  result.params = move dataEntry.requestState.params
   dataEntry.requestState = IncomingRequestState()
 
 proc afterRecvHttp(
@@ -801,7 +802,7 @@ proc afterRecvHttp(
         )
         dataEntry.bytesReceived = bytesRemaining
 
-    populateUrlParams(dataEntry.requestState)
+    setUrlParams(dataEntry.requestState)
 
     let request = server.popRequest(clientSocket, dataEntry)
     server.postTask(WorkerTask(request: request))
