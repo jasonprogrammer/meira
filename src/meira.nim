@@ -510,7 +510,10 @@ proc setUrlParams(requestState: var IncomingRequestState) =
   let questionMarkPosition = requestState.uri.find("?")
   let queryParamsStr = requestState.uri[questionMarkPosition+1 .. ^1]
   for key, value in decodeQuery(queryParamsStr):
-    requestState.params[key] = value
+    if key in requestState.params:
+      requestState.params[key] = "," & value
+    else:
+      requestState.params[key] = value
 
 proc popRequest(
   server: Server,
