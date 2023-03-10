@@ -506,14 +506,26 @@ proc afterRecvWebSocket(
         )
       websocket.postWebSocketUpdate(update)
 
-proc setUrlParams(requestState: var IncomingRequestState) =
-  let questionMarkPosition = requestState.uri.find("?")
-  let queryParamsStr = requestState.uri[questionMarkPosition+1 .. ^1]
+proc setUrlParams(request: var Request) =
+  let questionMarkPosition = request.uri.find("?")
+  let queryParamsStr = request.uri[questionMarkPosition+1 .. ^1]
   for key, value in decodeQuery(queryParamsStr):
-    if key in requestState.params:
-      requestState.params[key] = "," & value
+    if key in request.params:
+      # using getOrDefault prevents a compiler error about a KeyError being
+      # raised
+      request.params[key] = request.params.getOrDefault(key, "") & "," & value
     else:
-      requestState.params[key] = value
+      request.params[key] = value
+
+proc setBodyFormData(request: var Request) =
+  for key, value in decodeQuery(request.body):
+    if key in request.form:
+      # using getOrDefault prevents a compiler error about a KeyError being
+      # raised
+      request.form[key] = request.form.getOrDefault(key, "") & "," & value
+    else:
+      request.form[key] = value
+
 
 proc popRequest(
   server: Server,
@@ -531,7 +543,13 @@ proc popRequest(
   result.headers = move dataEntry.requestState.headers
   result.body = move dataEntry.requestState.body
   result.body.setLen(dataEntry.requestState.contentLength)
-  result.params = move dataEntry.requestState.params
+
+  setUrlParams(result)
+
+  let contentType = if "Content-Type" in result.headers: result.headers["Content-Type"] else: ""
+  if result.httpMethod != "GET" and contentType == "application/x-www-form-urlencoded":
+    setBodyFormData(result)
+
   dataEntry.requestState = IncomingRequestState()
 
 proc afterRecvHttp(
@@ -804,8 +822,6 @@ proc afterRecvHttp(
           bytesRemaining
         )
         dataEntry.bytesReceived = bytesRemaining
-
-    setUrlParams(dataEntry.requestState)
 
     let request = server.popRequest(clientSocket, dataEntry)
     server.postTask(WorkerTask(request: request))
