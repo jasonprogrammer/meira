@@ -30,7 +30,9 @@ See [docs and examples](./examples/README.md).
   - [X] Add code on query parameter handling
   - [X] Add docs on how to handle query params
 - [ ] POST handling
-  - [ ] POST payload handling
+  - [ ] POST `application/x-www-form-urlencoded` payload handling
+  - [ ] POST `application/json` payload handling
+  - [ ] POST `multipart/form-data` payload handling
   - [ ] File upload
 - [ ] Cookie management
   - [ ] Add code for cookie handling
