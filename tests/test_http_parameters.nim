@@ -9,6 +9,8 @@ router.notFoundHandler = proc(request: Request) =
 router.methodNotAllowedHandler = proc(request: Request) =
   doAssert false
 router.errorHandler = proc(request: Request, e: ref Exception) =
+  echo "An error has occurred!"
+  echo e.msg
   doAssert false
 
 proc searchHandler(request: Request) =
