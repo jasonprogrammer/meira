@@ -6,12 +6,13 @@ var router: Router
 router.get("/public/**", staticFileDirectoryHandler)
 
 proc createUserHandler*(request: Request) =
-  let first_name = request.form["first_name"]
-  let last_name = request.form["last_name"]
+  let firstName = request.form["first_name"]
+  let lastName = request.form["last_name"]
+  let foodsStr = request.form["food"]
 
   var headers: HttpHeaders
   headers["Content-Type"] = "text/plain"
-  request.respond(200, headers, body=fmt"first: {first_name}, author: {last_name}")
+  request.respond(200, headers, body=fmt"first: {firstName}, author: {lastName}, foods: {foodsStr}")
 
 router.post("/users", createUserHandler)
 
