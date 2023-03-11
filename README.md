@@ -40,6 +40,21 @@ See [docs and examples](./examples/README.md).
 - [ ] Middleware
   - [ ] Add initial code
 
+## How to run the tests
+
+Run all tests with [Testament](https://nim-lang.org/docs/testament.html):
+
+```
+testament pattern "tests/*.nim"
+```
+
+Run a single test with Testament:
+
+```
+testament pattern "tests/test_websockets.nim"
+```
+
+
 ## Contact
 
 If you'd like to discuss anything about the project, feel free to contact me
