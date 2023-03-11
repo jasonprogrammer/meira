@@ -18,6 +18,10 @@ proc createUserHandler*(request: Request) =
   of "1":
     doAssert request.form["first_name"] == "jane"
     doAssert request.form["last_name"] == "doe"
+  of "2":
+    doAssert request.form["first_name"] == "jane"
+    doAssert request.form["last_name"] == "doe"
+    doAssert request.form["food"] == "pizza,burger,taco"
 
   request.respond(200)
 
@@ -32,6 +36,7 @@ proc requesterProc() =
 
   let client = newHttpClient()
   discard client.post("http://localhost:8081/users", "test_number=1&first_name=jane&last_name=doe")
+  discard client.post("http://localhost:8081/users", "test_number=1&first_name=bob&last_name=smithy&food=pizza&food=burger&food=taco")
 
   echo "Done, shutting down the server"
   server.close()
