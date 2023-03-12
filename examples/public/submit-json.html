@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test</title>
+  </head>
+  <body>
+    <h1>Submit JSON with a JavaScript POST Request</h1>
+    <script>
+      // this code is a modified version of this code:
+      //   https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+      const data = {
+        first_name: "Jane",
+        last_name: "Doe"
+      };
+
+      fetch("http://localhost:8080/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          alert("Success");
+        })
+        .catch((error) => {
+          alert("Error: " + error);
+        });
+    </script>
+  </body>
+</html>
