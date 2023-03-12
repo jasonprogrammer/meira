@@ -31,7 +31,7 @@ See [docs and examples](./examples/README.md).
   - [X] Add docs on how to handle query params
 - [ ] POST handling
   - [X] POST `application/x-www-form-urlencoded` payload handling
-  - [ ] POST `application/json` payload handling
+  - [X] Document POST `application/json` payload handling
   - [ ] POST `multipart/form-data` payload handling
   - [ ] File upload
 - [ ] Cookie management
