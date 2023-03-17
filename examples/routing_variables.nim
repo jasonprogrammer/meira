@@ -1,14 +1,14 @@
 import meira, std/tables
 
-proc indexHandler(request: Request) =
+proc indexHandler(request: Request): Response =
   var headers: HttpHeaders
   headers["Content-Type"] = "text/plain"
-  request.respond(200, headers, "Hello, World!")
+  return newResponse(200, headers, "Hello, World!")
 
-proc nameHandler(request: Request) =
+proc nameHandler(request: Request): Response =
   var headers: HttpHeaders
   headers["Content-Type"] = "text/plain"
-  request.respond(200, headers, "Hello " & request.context.urlArgs["first"] & " " & request.context.urlArgs["last"])
+  return newResponse(200, headers, "Hello " & request.context.urlArgs["first"] & " " & request.context.urlArgs["last"])
 
 var router: Router
 router.get("/", indexHandler)

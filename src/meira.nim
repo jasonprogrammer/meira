@@ -1209,7 +1209,7 @@ proc serve*(
     raise currentExceptionAsMeiraError()
 
 proc newServer*(
-  handler: RequestHandler,
+  handler: ServerRequestHandler,
   websocketHandler: WebSocketHandler = nil,
   logHandler: LogHandler = nil,
   workerThreads = max(countProcessors() * 10, 1),

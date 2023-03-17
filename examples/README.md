@@ -5,6 +5,9 @@
   - [JSON POST data](./docs/submit_json.md)
   - [URL params](./docs/url_params.md)
 
+### Middleware
+  - [Writing middleware](./docs/middleware.md)
+
 ### Routing
   - [Variables in routes](./docs/routing_variables.md)
 

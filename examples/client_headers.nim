@@ -2,7 +2,7 @@ import meira
 
 ## This example shows how to access client request headers.
 
-proc indexHandler(request: Request) =
+proc indexHandler(request: Request): Response =
   # Access specific request headers
   echo request.headers["Host"]
 
@@ -13,7 +13,7 @@ proc indexHandler(request: Request) =
   # Send all of the request headers back to the client as text
   var headers: HttpHeaders
   headers["Content-Type"] = "text/plain"
-  request.respond(200, headers, $request.headers)
+  return newResponse(200, headers, $request.headers)
 
 var router: Router
 router.get("/", indexHandler)

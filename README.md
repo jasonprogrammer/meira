@@ -35,10 +35,12 @@ See [docs and examples](./examples/README.md).
   - [ ] POST `multipart/form-data` payload handling
   - [ ] File upload
 - [ ] Cookie management
-  - [ ] Add code for cookie handling
-  - [ ] Add documentation/examples for handling cookies/logins
+  - [ ] Add middleware code and example for file-based cookie handling
+  - [ ] Add documentation for file-based cookie handling
 - [ ] Middleware
-  - [ ] Add initial code
+  - [X] Add initial code and example
+  - [ ] Add documentation
+  - [ ] Add tests
 
 ## How to run the tests
 

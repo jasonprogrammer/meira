@@ -2,10 +2,10 @@ import meira
 import strformat
 import tables
 
-proc searchHandler(request: Request) =
+proc searchHandler(request: Request): Response =
   let title = request.params["title"]
   let author = request.params["author"]
-  request.respond(200, body=fmt"title: {title}, author: {author}")
+  return newResponse(200, body=fmt"title: {title}, author: {author}")
 
 var router: Router
 router.get("/search", searchHandler)

@@ -38,6 +38,11 @@ type
 
   Request* = ptr RequestObj
 
+  Response* = object
+    statusCode*: int
+    headers*: HttpHeaders
+    body*: string
+
   WebSocket* = object
     server*: Server
     clientSocket*: SocketHandle
@@ -52,7 +57,7 @@ type
   MessageKind* = enum
     TextMessage, BinaryMessage, Ping, Pong
 
-  RequestHandler* = proc(request: Request) {.gcsafe.}
+  ServerRequestHandler* = proc(request: Request) {.gcsafe.}
 
   WebSocketHandler* = proc(
     websocket: WebSocket,
@@ -61,7 +66,7 @@ type
   ) {.gcsafe.}
 
   ServerObj* = object
-    handler*: RequestHandler
+    handler*: ServerRequestHandler
     websocketHandler*: WebSocketHandler
     logHandler*: LogHandler
     maxHeadersLen*, maxBodyLen*, maxMessageLen*: int
@@ -283,5 +288,12 @@ proc respond*(
 
   if queueWasEmpty:
     request.server.trigger(request.server.responseQueued)
+
+proc newResponse*(statusCode: int, headers: HttpHeaders = emptyHttpHeaders(), body: string = ""): Response =
+  return Response(
+    statusCode: statusCode,
+    headers: headers,
+    body: body
+  )
 
 
