@@ -12,11 +12,11 @@ proc handler(request: Request) =
 
 block:
   var router: Router
-  router.notFoundHandler = proc(request: Request) =
+  router.notFoundHandler = proc(request: Request): Response =
     doAssert false
-  router.methodNotAllowedHandler = proc(request: Request) =
+  router.methodNotAllowedHandler = proc(request: Request): Response =
     doAssert false
-  router.errorHandler = proc(request: Request, e: ref Exception) =
+  router.errorHandler = proc(request: Request, e: ref Exception): Response =
     doAssert false
 
   router.get("/user/<id>", userIdHandler)

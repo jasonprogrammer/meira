@@ -1,9 +1,9 @@
 import meira
 
-proc indexHandler(request: Request) =
+proc indexHandler(request: Request): Response =
   var headers: HttpHeaders
   headers["Content-Type"] = "text/html"
-  request.respond(200, headers, """
+  return newResponse(200, headers, """
   <script>
     var ws = new WebSocket("ws://localhost:8080/ws");
     ws.onmessage = function (event) {
@@ -12,9 +12,10 @@ proc indexHandler(request: Request) =
   </script>
   """)
 
-proc upgradeHandler(request: Request) =
+proc upgradeHandler(request: Request): Response =
   let websocket = request.upgradeToWebSocket()
   websocket.send("Hello world from WebSocket!")
+  return newResponse(200)
 
 proc websocketHandler(
   websocket: WebSocket,

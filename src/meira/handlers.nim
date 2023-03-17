@@ -8,7 +8,7 @@ import strutils
 import webby
 import webby/httpheaders
 
-proc staticFileDirectoryHandler*(request: Request) =
+proc staticFileDirectoryHandler*(request: Request): Response =
   ## This handler helps serve static files from a directory.
   ##
   ## The code in this handler was copied and adapted from the static file
@@ -33,17 +33,14 @@ proc staticFileDirectoryHandler*(request: Request) =
   headers["Content-Type"] = "text/html"
 
   if not filePath.startsWith(request.server.staticDir):
-    request.respond(int(Http404), headers)
-    return
+    return newResponse(int(Http404), headers)
 
   if not fileExists(filePath):
-    request.respond(int(Http404), headers)
-    return
+    return newResponse(int(Http404), headers)
 
   var file = getFilePermissions(filePath)
   if not file.contains(fpOthersRead):
-    request.respond(int(Http403), headers)
-    return
+    return newResponse(int(Http403), headers)
 
   headers["Content-Type"] = matchFile(filePath).mime.value
 
@@ -56,10 +53,10 @@ proc staticFileDirectoryHandler*(request: Request) =
     # If the user has a cached version of this file and it matches our
     # version, let them use it
     if request.headers.contains("If-None-Match") and request.headers["If-None-Match"] == hashed:
-      request.respond(int(Http304), headers)
+      return newResponse(int(Http304), headers)
     else:
       headers["ETag"] = hashed
-      request.respond(int(Http200), headers, fileContents)
+      return newResponse(int(Http200), headers, fileContents)
 
-  request.respond(int(Http200), headers, fileContents)
+  return newResponse(int(Http200), headers, fileContents)
 

@@ -14,23 +14,23 @@ db.withConnnection conn:
   conn.exec(sql"insert or replace into table1 values (0, 0)")
 
 # A request to /get will return the count
-proc getHandler(request: Request) =
+proc getHandler(request: Request): Response =
   var count: int
   db.withConnnection conn:
     count = parseInt(conn.getValue(sql"select count from table1 limit 1"))
 
   var headers: HttpHeaders
   headers["Content-Type"] = "text/plain"
-  request.respond(200, headers, "Count: " & $count & "\n")
+  return newResponse(200, headers, "Count: " & $count & "\n")
 
 # A request to /inc will increase the count by 1
-proc incHandler(request: Request) =
+proc incHandler(request: Request): Response =
   db.withConnnection conn:
     conn.exec(sql"update table1 set count = count + 1")
 
   var headers: HttpHeaders
   headers["Content-Type"] = "text/plain"
-  request.respond(200, headers, "Done")
+  return newResponse(200, headers, "Done")
 
 var router: Router
 router.get("/get", getHandler)

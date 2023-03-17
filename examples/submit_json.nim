@@ -8,12 +8,12 @@ type User = object
   first_name: string
   last_name: string
 
-proc createUserHandler*(request: Request) =
+proc createUserHandler*(request: Request): Response =
   let user = request.body.fromJson(User)
 
   var headers: HttpHeaders
   headers["Content-Type"] = "application/json"
-  request.respond(200, headers, body=user.toJson())
+  return newResponse(200, headers, body=user.toJson())
 
 router.post("/users", createUserHandler)
 

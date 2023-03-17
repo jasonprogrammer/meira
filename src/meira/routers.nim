@@ -1,6 +1,11 @@
 import ./common, std/strutils, std/tables, webby/httpheaders
+import options
 
 type
+  RequestHandler* = proc(request: Request): Response {.gcsafe.}
+  PreRequestMiddlewareHandler* = proc(router: Router, request: Request): Option[Response] {.gcsafe, nimcall.}
+  PostRequestMiddlewareHandler* = proc(router: Router, request: Request, response: var Response) {.gcsafe, nimcall.}
+
   Router* = object
     ## Routes HTTP requests. See `addRoute` for more info.
     notFoundHandler*: RequestHandler
@@ -9,6 +14,8 @@ type
       ## Called when the HTTP method is not registered for the route
     errorHandler*: RequestErrorHandler
       ## Called when the route request handler raises an Exception
+    preRequestMiddlewareProcs*: seq[PreRequestMiddlewareHandler]
+    postRequestMiddlewareProcs*: seq[PostRequestMiddlewareHandler]
     routes: seq[Route]
 
   RequestErrorHandler* = proc(request: Request, e: ref Exception) {.gcsafe.}
@@ -114,7 +121,7 @@ proc patch*(
   ## Adds a route for PATCH requests. See `addRoute` for more info.
   router.addRoute("PATCH", route, handler)
 
-proc defaultNotFoundHandler(request: Request) =
+proc defaultNotFoundHandler(request: Request): Response =
   const body = "<h1>Not Found</h1>"
 
   var headers: HttpHeaders
@@ -122,11 +129,11 @@ proc defaultNotFoundHandler(request: Request) =
 
   if request.httpMethod == "HEAD":
     headers["Content-Length"] = $body.len
-    request.respond(404, headers)
+    return newResponse(404, headers)
   else:
-    request.respond(404, headers, body)
+    return newResponse(404, headers, body)
 
-proc defaultMethodNotAllowedHandler(request: Request) =
+proc defaultMethodNotAllowedHandler(request: Request): Response =
   const body = "<h1>Method Not Allowed</h1>"
 
   var headers: HttpHeaders
@@ -134,9 +141,9 @@ proc defaultMethodNotAllowedHandler(request: Request) =
 
   if request.httpMethod == "HEAD":
     headers["Content-Length"] = $body.len
-    request.respond(405, headers)
+    return newResponse(405, headers)
   else:
-    request.respond(405, headers, body)
+    return newResponse(405, headers, body)
 
 proc isPartialWildcard(test: string): bool {.inline.} =
   test.len > 2 and test.startsWith('*') or test.endsWith('*')
@@ -198,15 +205,25 @@ proc pathParts(uri: string): seq[string] =
 
   result.delete(0)
 
-proc toHandler*(router: Router): RequestHandler =
-  return proc(request: Request) =
+proc respond(request: Request, response: Response) =
+  request.respond(response.statusCode, response.headers, response.body)
+
+proc toHandler*(router: Router): ServerRequestHandler =
+  return proc(request: Request) {.gcsafe.} =
     ## All requests arrive here to be routed
+    for middlewareProc in router.preRequestMiddlewareProcs:
+      let optionalResponse = middlewareProc(router, request)
+      if optionalResponse.isSome:
+        # if the middleware returns a Response, that means the request has been
+        # considered handled and we should return immediately
+        respond(request, optionalResponse.get())
+        return
 
     template notFound() =
       if router.notFoundHandler != nil:
-        router.notFoundHandler(request)
+        respond(request, router.notFoundHandler(request))
       else:
-        defaultNotFoundHandler(request)
+        respond(request, defaultNotFoundHandler(request))
 
     if request.uri.len > 0 and request.uri[0] != '/' and ':' in request.uri:
       notFound()
@@ -265,14 +282,21 @@ proc toHandler*(router: Router): RequestHandler =
         if matchedRoute:
           matchedSomeRoute = true
           if request.httpMethod == route.httpMethod: # We have a winner
-            route.handler(request)
+            var response = route.handler(request)
+
+            for middlewareProc in router.postRequestMiddlewareProcs:
+              # the post-request middleware can mutate the response if desired
+              middlewareProc(router, request, response)
+
+            respond(request, response)
+
             return
 
       if matchedSomeRoute: # We matched a route but not the HTTP method
         if router.methodNotAllowedHandler != nil:
-          router.methodNotAllowedHandler(request)
+          respond(request, router.methodNotAllowedHandler(request))
         else:
-          defaultMethodNotAllowedHandler(request)
+          respond(request, defaultMethodNotAllowedHandler(request))
       else:
         notFound()
     except:
@@ -282,5 +306,5 @@ proc toHandler*(router: Router): RequestHandler =
       else:
         raise e
 
-converter convertToHandler*(router: Router): RequestHandler =
+converter convertToHandler*(router: Router): ServerRequestHandler =
   router.toHandler()
