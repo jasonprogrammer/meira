@@ -1,4 +1,4 @@
-import ../src/meira
+import meira
 import jsony
 import options
 import tables
