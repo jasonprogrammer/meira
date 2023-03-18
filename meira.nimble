@@ -10,7 +10,10 @@ requires "zippy == 0.10.4"
 requires "webby == 0.1.3"
 requires "filetype == 0.9.0"
 
-# for tests/test_http_json_with_requester_threads.nim
+# for file-based sessions with cookies
+requires "nimcrypto == 0.5.4"
+
+# for certain tests and examples
 requires "jsony == 1.1.5"
 
 # for tests/test_websockets.nim
