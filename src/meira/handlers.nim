@@ -8,7 +8,7 @@ import strutils
 import webby
 import webby/httpheaders
 
-proc staticFileDirectoryHandler*(request: Request): Response =
+proc staticFileDirectoryHandler*(request: Request, response: var Response): Response =
   ## This handler helps serve static files from a directory.
   ##
   ## The code in this handler was copied and adapted from the static file

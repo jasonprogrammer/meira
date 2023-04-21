@@ -2,8 +2,8 @@ import ./common, std/strutils, std/tables, webby/httpheaders
 import options
 
 type
-  RequestHandler* = proc(request: Request): Response {.gcsafe.}
-  PreRequestMiddlewareHandler* = proc(router: Router, request: Request): Option[Response] {.gcsafe, nimcall.}
+  RequestHandler* = proc(request: Request, response: var Response): Response {.gcsafe.}
+  PreRequestMiddlewareHandler* = proc(router: Router, request: Request, response: var Response): bool {.gcsafe, nimcall.}
   PostRequestMiddlewareHandler* = proc(router: Router, request: Request, response: var Response) {.gcsafe, nimcall.}
 
   Router* = object
@@ -121,17 +121,17 @@ proc patch*(
   ## Adds a route for PATCH requests. See `addRoute` for more info.
   router.addRoute("PATCH", route, handler)
 
-proc defaultNotFoundHandler(request: Request): Response =
+proc defaultNotFoundHandler(request: Request, response: var Response): Response =
   const body = "<h1>Not Found</h1>"
+  response.headers["Content-Type"] = "text/html"
 
-  var headers: HttpHeaders
-  headers["Content-Type"] = "text/html"
-
+  response.statusCode = 404
   if request.httpMethod == "HEAD":
-    headers["Content-Length"] = $body.len
-    return newResponse(404, headers)
-  else:
-    return newResponse(404, headers, body)
+    response.headers["Content-Length"] = $body.len
+    return response
+
+  response.body = body
+  return response
 
 proc defaultMethodNotAllowedHandler(request: Request): Response =
   const body = "<h1>Method Not Allowed</h1>"
@@ -210,20 +210,22 @@ proc respond(request: Request, response: Response) =
 
 proc toHandler*(router: Router): ServerRequestHandler =
   return proc(request: Request) {.gcsafe.} =
+    var response = newResponse(200)
+
     ## All requests arrive here to be routed
-    for middlewareProc in router.preRequestMiddlewareProcs:
-      let optionalResponse = middlewareProc(router, request)
-      if optionalResponse.isSome:
+    for middlewareProc1 in router.preRequestMiddlewareProcs:
+      let shouldReturnResponseEarly = middlewareProc1(router, request, response)
+      if shouldReturnResponseEarly:
         # if the middleware returns a Response, that means the request has been
         # considered handled and we should return immediately
-        respond(request, optionalResponse.get())
+        respond(request, response)
         return
 
     template notFound() =
       if router.notFoundHandler != nil:
-        respond(request, router.notFoundHandler(request))
+        respond(request, router.notFoundHandler(request, response))
       else:
-        respond(request, defaultNotFoundHandler(request))
+        respond(request, defaultNotFoundHandler(request, response))
 
     if request.uri.len > 0 and request.uri[0] != '/' and ':' in request.uri:
       notFound()
@@ -282,19 +284,18 @@ proc toHandler*(router: Router): ServerRequestHandler =
         if matchedRoute:
           matchedSomeRoute = true
           if request.httpMethod == route.httpMethod: # We have a winner
-            var response = route.handler(request)
+            var handledResponse = route.handler(request, response)
 
             for middlewareProc in router.postRequestMiddlewareProcs:
               # the post-request middleware can mutate the response if desired
-              middlewareProc(router, request, response)
+              middlewareProc(router, request, handledResponse)
 
-            respond(request, response)
-
+            respond(request, handledResponse)
             return
 
       if matchedSomeRoute: # We matched a route but not the HTTP method
         if router.methodNotAllowedHandler != nil:
-          respond(request, router.methodNotAllowedHandler(request))
+          respond(request, router.methodNotAllowedHandler(request, response))
         else:
           respond(request, defaultMethodNotAllowedHandler(request))
       else:
