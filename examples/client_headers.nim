@@ -11,9 +11,10 @@ proc indexHandler(request: Request, response: var Response): Response =
     echo key, " = ", value
 
   # Send all of the request headers back to the client as text
-  var headers: HttpHeaders
-  headers["Content-Type"] = "text/plain"
-  return newResponse(200, headers, $request.headers)
+  response.headers["Content-Type"] = "text/plain"
+  response.statusCode = 200
+  response.body = $request.headers
+  return response
 
 var router: Router
 router.get("/", indexHandler)

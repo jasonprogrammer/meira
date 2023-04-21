@@ -24,8 +24,7 @@ proc preRequestMiddleware(router: Router, request: Request, response: var Respon
   let (username, password) = getCredentials(request)
 
   if username == "before" and password == "password123":
-    var headers: HttpHeaders
-    headers["Content-Type"] = "text/plain"
+    response.headers["Content-Type"] = "text/plain"
     response.statusCode = 200
     response.body = getJsonResponse(true)
     return true
@@ -52,13 +51,16 @@ router.postRequestMiddlewareProcs = @[
 proc loginHandler(request: Request, response: var Response): Response =
   let (username, password) = getCredentials(request)
 
-  var headers: HttpHeaders
-  headers["Content-Type"] = "text/plain"
+  response.headers["Content-Type"] = "text/plain"
 
   if username == "handler" and password == "password123":
-    return newResponse(200, headers, body=getJsonResponse(true))
+    response.statusCode = 200
+    response.body = getJsonResponse(true)
+    return response
 
-  return newResponse(400, headers, body=getJsonResponse(false))
+  response.statusCode = 400
+  response.body = getJsonResponse(false)
+  return response
 
 router.post("/login", loginHandler)
 
