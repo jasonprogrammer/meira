@@ -5,14 +5,15 @@ import tables
 var router: Router
 router.get("/public/**", staticFileDirectoryHandler)
 
-proc createUserHandler*(request: Request): Response =
+proc createUserHandler*(request: Request, response: var Response): Response =
   let firstName = request.form["first_name"]
   let lastName = request.form["last_name"]
   let foodsStr = request.form["food"]
 
-  var headers: HttpHeaders
-  headers["Content-Type"] = "text/plain"
-  return newResponse(200, headers, body=fmt"first: {firstName}, author: {lastName}, foods: {foodsStr}")
+  response.headers["Content-Type"] = "text/plain"
+  response.statusCode = 200
+  response.body = fmt"first: {firstName}, author: {lastName}, foods: {foodsStr}"
+  return response
 
 router.post("/users", createUserHandler)
 

@@ -2,7 +2,7 @@ import meira
 import strformat
 import tables
 
-proc searchHandler(request: Request): Response =
+proc searchHandler(request: Request, response: var Response): Response =
   let title = request.params["title"]
   let author = request.params["author"]
   return newResponse(200, body=fmt"title: {title}, author: {author}")

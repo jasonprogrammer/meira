@@ -17,10 +17,10 @@ var
 
 initLock(lock)
 
-proc indexHandler(request: Request): Response =
-  var headers: HttpHeaders
-  headers["Content-Type"] = "text/html"
-  return newResponse(200, headers, """
+proc indexHandler(request: Request, response: var Response): Response =
+  response.headers["Content-Type"] = "text/html"
+  response.statusCode = 200
+  response.body = """
   <!DOCTYPE html>
   <script>
     var ws = new WebSocket("ws://localhost:8080/chat")
@@ -41,12 +41,14 @@ proc indexHandler(request: Request): Response =
   <input id="msg" type="text">
   <input type="button" onclick="send()" value="Send">
   <div>Messages received:</div>
-  """)
+  """
+  return response
 
-proc upgradeHandler(request: Request): Response =
+proc upgradeHandler(request: Request, response: var Response): Response =
   let websocket = request.upgradeToWebSocket()
   websocket.send("Hello from WebSocket server!")
-  return newResponse(200)
+  response.statusCode = 200
+  return response
 
 proc websocketHandler(
   websocket: WebSocket,
