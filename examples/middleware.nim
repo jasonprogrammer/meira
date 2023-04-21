@@ -17,17 +17,19 @@ proc getCredentials(request: Request): (string, string) =
 proc getJsonResponse(loginIsSuccessful: bool): string =
   return {"success": loginIsSuccessful}.toTable().toJson()
 
-proc preRequestMiddleware(router: Router, request: Request): Option[Response] =
+proc preRequestMiddleware(router: Router, request: Request, response: var Response): bool =
   if request.uri != "/login":
-    return none(Response)
+    return false
 
   let (username, password) = getCredentials(request)
 
   if username == "before" and password == "password123":
     var headers: HttpHeaders
     headers["Content-Type"] = "text/plain"
-    return some(newResponse(200, body=getJsonResponse(true)))
-  return none(Response)
+    response.statusCode = 200
+    response.body = getJsonResponse(true)
+    return true
+  return false
 
 proc postRequestMiddleware(router: Router, request: Request, response: var Response) =
   if request.uri != "/login":
@@ -47,7 +49,7 @@ router.postRequestMiddlewareProcs = @[
   postRequestMiddleware
 ]
 
-proc loginHandler(request: Request): Response =
+proc loginHandler(request: Request, response: var Response): Response =
   let (username, password) = getCredentials(request)
 
   var headers: HttpHeaders
