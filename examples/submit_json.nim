@@ -8,7 +8,7 @@ type User = object
   first_name: string
   last_name: string
 
-proc createUserHandler*(request: Request): Response =
+proc createUserHandler*(request: Request, response: var Response): Response =
   let user = request.body.fromJson(User)
 
   var headers: HttpHeaders

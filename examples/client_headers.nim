@@ -2,7 +2,7 @@ import meira
 
 ## This example shows how to access client request headers.
 
-proc indexHandler(request: Request): Response =
+proc indexHandler(request: Request, response: var Response): Response =
   # Access specific request headers
   echo request.headers["Host"]
 

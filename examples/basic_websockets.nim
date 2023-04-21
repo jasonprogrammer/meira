@@ -1,6 +1,6 @@
 import meira
 
-proc indexHandler(request: Request): Response =
+proc indexHandler(request: Request, response: var Response): Response =
   var headers: HttpHeaders
   headers["Content-Type"] = "text/html"
   return newResponse(200, headers, """
@@ -12,7 +12,7 @@ proc indexHandler(request: Request): Response =
   </script>
   """)
 
-proc upgradeHandler(request: Request): Response =
+proc upgradeHandler(request: Request, response: var Response): Response =
   let websocket = request.upgradeToWebSocket()
   websocket.send("Hello world from WebSocket!")
   return newResponse(200)

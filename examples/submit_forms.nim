@@ -5,7 +5,7 @@ import tables
 var router: Router
 router.get("/public/**", staticFileDirectoryHandler)
 
-proc createUserHandler*(request: Request): Response =
+proc createUserHandler*(request: Request, response: var Response): Response =
   let firstName = request.form["first_name"]
   let lastName = request.form["last_name"]
   let foodsStr = request.form["food"]
