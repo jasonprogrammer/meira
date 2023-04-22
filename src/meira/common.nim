@@ -22,6 +22,10 @@ type
   RequestContext* = object
     urlArgs*: Table[string, string]
 
+  Session* = object
+    values*: Table[string, string]
+    sessionHasChanged*: bool
+
   RequestObj* = object
     httpVersion*: HttpVersion
     httpMethod*: string
@@ -35,6 +39,7 @@ type
     context*: RequestContext
     params*: Table[string, string]
     form*: Table[string, string]
+    session*: Session
 
   Request* = ptr RequestObj
 
@@ -211,6 +216,26 @@ proc trigger*(
       ErrorLevel,
       "Error triggering event ", $err, " ", osErrorMsg(err)
     )
+
+proc setSessionValue*(
+  request: Request,
+  key: string,
+  value: string,
+) =
+  request.session.values[key] = value
+  request.session.sessionHasChanged = true
+
+proc getSessionValue*(
+  request: Request,
+  key: string,
+): string =
+  return request.session.values[key]
+
+proc deleteSessionValue*(
+  request: Request,
+  key: string,
+) =
+  request.session.values.del(key)
 
 proc respond*(
   request: Request,

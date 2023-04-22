@@ -1,6 +1,6 @@
 import meira
+import os
 import jsony
-import options
 import tables
 
 var router: Router
@@ -18,27 +18,17 @@ proc getJsonResponse(loginIsSuccessful: bool): string =
   return {"success": loginIsSuccessful}.toTable().toJson()
 
 proc preRequestMiddleware(router: Router, request: Request, response: var Response): bool =
-  if request.uri != "/login":
-    return false
-
-  let (username, password) = getCredentials(request)
-
-  if username == "before" and password == "password123":
-    response.headers["Content-Type"] = "application/json"
-    response.statusCode = 200
-    response.body = getJsonResponse(true)
-    return true
-  return false
+  response.statusCode = 200
+  response.body = getJsonResponse(true)
 
 proc postRequestMiddleware(router: Router, request: Request, response: var Response) =
-  if request.uri != "/login":
-    return
-
-  let (username, password) = getCredentials(request)
-
-  if username == "after" and password == "password123":
-    response.statusCode = 200
-    response.body = getJsonResponse(true)
+  response.headers.add(("Set-Cookie", "there"))
+  let sessionId = "abcdef12345"
+  if request.session.sessionHasChanged:
+    writeFile(
+      getTempDir() / sessionId,
+      request.session.toJson()
+    )
 
 router.preRequestMiddlewareProcs = @[
   preRequestMiddleware
@@ -53,7 +43,9 @@ proc loginHandler(request: Request, response: var Response): Response =
 
   response.headers["Content-Type"] = "application/json"
 
-  if username == "handler" and password == "password123":
+  if username == "amy" and password == "password123":
+    request.setSessionValue("user_id", "12345")
+
     response.statusCode = 200
     response.body = getJsonResponse(true)
     return response
@@ -66,5 +58,5 @@ router.post("/login", loginHandler)
 
 let server = newServer(router, staticDir="./examples/public")
 echo "Serving on http://localhost:8080"
-echo "In a browser, open: http://localhost:8080/public/middleware.html"
+echo "In a browser, open: http://localhost:8080/public/file_sessions.html"
 server.serve(Port(8080))

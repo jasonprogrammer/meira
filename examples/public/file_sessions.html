@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test</title>
+  </head>
+  <body>
+    <h1>Submit requests to test file-based sessions</h1>
+
+    <input type="submit" value="Submit" onclick="submitForms()"/>
+    <div id="results" style="margin-top: 10px"></div>
+    <script>
+      function appendResult(username, password, responseBody) {
+        var container = document.getElementById('results');
+        var subContainer = document.createElement('div');
+        subContainer.innerHTML = `For ${username}:${password}, response: ${responseBody}`;
+        container.appendChild(subContainer);
+      }
+
+      function submitForm(username, password) {
+        // this code is a modified version of this code:
+        //   https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+        const data = {
+          username,
+          password
+        };
+
+        fetch("http://localhost:8080/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            appendResult(username, password, JSON.stringify(data));
+          })
+          .catch((error) => {
+            appendResult(username, password, JSON.stringify(error));
+          });
+      }
+
+      function submitForms() {
+        submitForm("amy", "password123");
+      }
+    </script>
+  </body>
+</html>

@@ -1,6 +1,7 @@
 basic
 basic_router
 chat
+file_sessions
 logging_file
 middleware
 static_files
