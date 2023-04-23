@@ -229,13 +229,20 @@ proc getSessionValue*(
   request: Request,
   key: string,
 ): string =
-  return request.session.values[key]
+  return request.session.values.getOrDefault(key)
+
+proc hasSessionValue*(
+  request: Request,
+  key: string,
+): bool =
+  return request.session.values.hasKey(key)
 
 proc deleteSessionValue*(
   request: Request,
   key: string,
 ) =
   request.session.values.del(key)
+  request.session.sessionHasChanged = true
 
 proc respond*(
   request: Request,

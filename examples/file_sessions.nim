@@ -1,7 +1,10 @@
+import cookies
 import meira
+import options
 import os
 import jsony
 import tables
+import uuid4
 
 var router: Router
 router.get("/public/**", staticFileDirectoryHandler)
@@ -18,13 +21,21 @@ proc getJsonResponse(loginIsSuccessful: bool): string =
   return {"success": loginIsSuccessful}.toTable().toJson()
 
 proc preRequestMiddleware(router: Router, request: Request, response: var Response): bool =
-  response.statusCode = 200
-  response.body = getJsonResponse(true)
+  return false
 
 proc postRequestMiddleware(router: Router, request: Request, response: var Response) =
-  response.headers.add(("Set-Cookie", "there"))
-  let sessionId = "abcdef12345"
-  if request.session.sessionHasChanged:
+  if not request.session.sessionHasChanged:
+    return
+
+  var sessionId = ""
+  if request.hasSessionValue("session_id"):
+    sessionId = request.getSessionValue("session_id")
+  else:
+    sessionId = $uuid4()
+    response.headers.add((
+      "Set-Cookie",
+      setCookie("session_id", sessionId, maxAge=some(60 * 60 * 12), httpOnly=true))
+    )
     writeFile(
       getTempDir() / sessionId,
       request.session.toJson()
